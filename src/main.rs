@@ -7,6 +7,9 @@ use rand::Rng;
 mod pages;
 use pages::*;
 
+mod helpers;
+use helpers::*;
+
 /*
 example headers
 ["GET /test HTTP/1.1", "Host: 127.0.0.1:8080", "Connection: keep-alive", "sec-ch-ua: \"Brave\";v=\"107\", \"Chromium\";v=\"107\", \"Not=A?Brand\";v=\"24\"", "sec-ch-ua-mobile: ?0", "sec-ch-ua-platform: \"Linux\"", "Upgrade-Insecure-Requests: 1", "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36", "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*
@@ -27,6 +30,7 @@ fn handle_client(mut stream: TcpStream, addr:SocketAddr) {
         let endpoint = root(request.clone());
         let response = match endpoint.as_str() {
             "/test" => test(request, addr),
+            "/qry-p-test" => qrstr(request),
             _ => notFound(),
         };
 
@@ -52,19 +56,6 @@ fn root(response:Vec<String>) -> String {
     // check if has query string parameters
 }
 
-
-/// extracts any query string parameters
-
-/* 
-
-fn qry_str(request:String) -> Vec<String> {
-    
-    if request.contains("?") {
-        // means that it contains query parameters
-
-
-    }
-*/
 // entry point
 
 fn main() {

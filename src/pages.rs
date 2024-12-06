@@ -42,3 +42,8 @@ pub fn test(request:Vec<String>, addr:SocketAddr) -> String {
     println!("hit the /test endpoint from {:?}", request[1].strip_prefix("Host: ").unwrap());
     response
 }
+
+pub fn qrstr(request:Vec<String>) -> String {
+    
+
+}
