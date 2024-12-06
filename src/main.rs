@@ -1,6 +1,11 @@
 use std::io::{BufRead, Read, Write};
-use std::net::{TcpListener, TcpStream};
+use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::io::BufReader;
+use rand::Rng;
+
+//. using the pages, which are function in the pages.rs which are then pattern matched in handle client function here
+mod pages;
+use pages::*;
 
 /*
 example headers
@@ -9,7 +14,7 @@ q=0.8", "Sec-GPC: 1", "Accept-Language: en-GB,en", "Sec-Fetch-Site: none", "Sec-
 
 */
 
-fn handle_client(mut stream: TcpStream) {
+fn handle_client(mut stream: TcpStream, addr:SocketAddr) {
     let mut buffer = BufReader::new(&stream);
 
     let request: Vec<String> = buffer
@@ -21,7 +26,7 @@ fn handle_client(mut stream: TcpStream) {
     if !request.is_empty() {
         let endpoint = root(request.clone());
         let response = match endpoint.as_str() {
-            "/test" => test(request),
+            "/test" => test(request, addr),
             _ => notFound(),
         };
 
@@ -36,55 +41,49 @@ fn handle_client(mut stream: TcpStream) {
 // pages on the web server 
 
 
-fn notFound() -> String {
-    let html = "<h1>404 Not Found</h1>";
-    format!(
-        "HTTP/1.1 404 NOT FOUND\r\n\
-         Content-Type: text/html\r\n\
-         Content-Length: {len}\r\n\
-         \r\n\
-         {h}",
-        len = html.len(),
-        h = html
-    )
-}
 
-
-fn test(request:Vec<String>) -> String {
-
-    let html = "<h1>Hello there in html header </h1>";
-
-    let response = String::from(format!("HTTP/1.1 200 OK\r\n\
-    Content-Type: text/html\r\n\
-    Content-Length: {len}\r\n\
-    \r\n\
-    {h}", len=html.len(), h=html).as_str());
-
-    // do something for a specific endpoint here
-
-    println!("hit the /test endpoint from {:?}", request[1].strip_prefix("Host: ").unwrap());
-    response
-}
+///  stripping the method and the http version to get the directory requested
 fn root(response:Vec<String>) -> String {
-    // stripping the method and the http version to get the directory requested
+    
     let directory = response[0].strip_prefix("GET ").unwrap_or(&response[0]);
     let directory = directory.strip_suffix(" HTTP/1.1").unwrap_or(directory);
     String::from(directory)
+
+    // check if has query string parameters
 }
+
+
+/// extracts any query string parameters
+
+/* 
+
+fn qry_str(request:String) -> Vec<String> {
+    
+    if request.contains("?") {
+        // means that it contains query parameters
+
+
+    }
+*/
 // entry point
 
 fn main() {
 
     // tcp listener
 
-    let listener = TcpListener::bind("127.0.0.1:8080").expect("failed to bind, port maybe in use");
+    let listener = TcpListener::bind("0.0.0.0:8080").expect("failed to bind, port maybe in use");
 
     println!("server listing on addressp provided");
 
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
-                std::thread::spawn(|| handle_client(stream));
+                let mut addr: SocketAddr;   
+                if let Ok(addr) = stream.peer_addr() {
+                    println!("{}", &addr);
+                    std::thread::spawn(move || handle_client(stream, addr));
+                }
+                
             }
             Err(e) => {eprintln!("{}", e)}
         } 
