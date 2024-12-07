@@ -4,11 +4,19 @@ use std::io::BufReader;
 use rand::Rng;
 
 //. using the pages, which are function in the pages.rs which are then pattern matched in handle client function here
-mod pages;
-use pages::*;
-
 mod helpers;
-use helpers::*;
+mod pages;
+
+use crate::pages::*;
+use crate::helpers::*;
+
+#[derive(Debug)]
+enum ReqT {
+    GET,
+    POST,
+    PUT,
+    DELETE
+}
 
 /*
 example headers
@@ -27,7 +35,15 @@ fn handle_client(mut stream: TcpStream, addr:SocketAddr) {
         .collect();
 
     if !request.is_empty() {
+        // stripping to find endpoint
         let endpoint = root(request.clone());
+
+        // finding request type, get, post, put
+        
+        let method = type_req(request[0].clone());
+
+        
+        println!("{:?}", method);
         let response = match endpoint.as_str() {
             "/test" => test(request, addr),
             "/qry-p-test" => qrstr(request),
@@ -51,6 +67,10 @@ fn root(response:Vec<String>) -> String {
     
     let directory = response[0].strip_prefix("GET ").unwrap_or(&response[0]);
     let directory = directory.strip_suffix(" HTTP/1.1").unwrap_or(directory);
+    if let Some(index) = directory.find("?") {
+        let directory = &directory[..index];
+        return String::from(directory)
+    }
     String::from(directory)
 
     // check if has query string parameters

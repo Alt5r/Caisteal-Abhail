@@ -3,6 +3,8 @@ use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::io::BufReader;
 use rand::Rng;
 
+use crate::helpers::{self, qry_str};
+
 pub fn notFound() -> String {
     let html = "<h1>404 Not Found</h1>";
     format!(
@@ -44,6 +46,13 @@ pub fn test(request:Vec<String>, addr:SocketAddr) -> String {
 }
 
 pub fn qrstr(request:Vec<String>) -> String {
-    
+    // returns list of strings where it alternates key, pair value throuhgout the list
 
+    let stripping:Vec<String> = request[0].split(" ").map(String::from).collect();
+    let stripping = &stripping[1];
+    println!("{}", stripping);
+    
+    let result = qry_str(stripping.clone());
+    //result
+    String::from("hello")
 }
