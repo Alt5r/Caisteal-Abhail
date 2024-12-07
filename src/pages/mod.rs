@@ -45,14 +45,25 @@ pub fn test(request:Vec<String>, addr:SocketAddr) -> String {
     response
 }
 
+/// returns list of strings where it alternates key, pair value throuhgout the list
 pub fn qrstr(request:Vec<String>) -> String {
-    // returns list of strings where it alternates key, pair value throuhgout the list
-
+    
+    // strips the method and http version from the request paramter
     let stripping:Vec<String> = request[0].split(" ").map(String::from).collect();
     let stripping = &stripping[1];
-    println!("{}", stripping);
+
+    println!("{}", stripping); // for debugging
     
     let result = qry_str(stripping.clone());
     //result
-    String::from("hello")
+    let html  = format!("<h1>your paramters are {:?} </h1>", result);
+
+    let response = String::from(format!("HTTP/1.1 200 OK\r\n\
+    Content-Type: text/html\r\n\
+    Content-Length: {len}\r\n\
+    \r\n\
+    {h}", len=html.len(), h=html.as_str()).as_str());
+
+    response
+
 }

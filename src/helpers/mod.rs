@@ -22,7 +22,7 @@ pub fn type_req(request:String) -> ReqT {
 
 }
 
-pub fn qry_str(request:String){
+pub fn qry_str(request:String) -> Vec<String> {
     
     if request.contains("?") && !request.contains("&") {
         // means that it contains query parameters and only one 
@@ -34,10 +34,22 @@ pub fn qry_str(request:String){
 
         println!("{:?}", parameter_val);
        
-        
+        parameter_val
     } else {
-        // somethign here
-        //String::from("Here")
+        Vec::new()
     }
-
 }
+
+/* 
+
+pub fn hret(html:&str) -> String {
+    let response = String::from(format!("HTTP/1.1 200 OK\r\n\
+    Content-Type: text/html\r\n\
+    Content-Length: {len}\r\n\
+    \r\n\
+    {h}", len=html.len(), h=html.as_str()).as_str());
+
+    response
+}
+
+*/
