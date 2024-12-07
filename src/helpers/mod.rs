@@ -36,7 +36,24 @@ pub fn qry_str(request:String) -> Vec<String> {
        
         parameter_val
     } else {
-        Vec::new()
+        // the case that multiple parameters are passed
+
+        let index = request.find("?");
+        let paramter_val = &request[index.unwrap() + 1..];
+
+        let indv_params:Vec<String> = paramter_val.split("&").map(String::from).collect(); // now a list of some_param=some_val type strcuture
+
+        let mut result:Vec<String> = Vec::new();
+
+        for param in indv_params {
+            let sub_lst:Vec<String> = param.split("=").map(|s| s.to_string()).collect(); // sub list of ["key, "val"]
+            
+            for i in sub_lst {
+                result.push(i);
+            }
+
+        }
+        result
     }
 }
 
