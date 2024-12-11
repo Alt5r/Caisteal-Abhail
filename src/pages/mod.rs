@@ -67,3 +67,13 @@ pub fn qrstr(request:Vec<String>) -> String {
     response
 
 }
+/// where user sends query string username="message"
+pub fn send_msg(request:Vec<String>) -> Vec<String> {
+    let stripping:Vec<String> = request[0].split(" ").map(String::from).collect();
+    let stripping = &stripping[1];
+
+    println!("{}", stripping); // for debugging
+    
+    let result = qry_str(stripping.clone());
+    result
+}
