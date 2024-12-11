@@ -47,6 +47,8 @@ fn handle_client(mut stream: TcpStream, addr:SocketAddr) {
         let response = match endpoint.as_str() {
             "/test" => test(request, addr),
             "/qry-p-test" => qrstr(request),
+            "/sqltest" => getUsers(request).unwrap(),
+            "/addUser" => addUser(request).unwrap(),
             _ => notFound(),
         };
 
